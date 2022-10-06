@@ -1,0 +1,99 @@
+print ()
+import math
+from operator import itemgetter
+
+# Function to find the Minkowski Distance between two vectors
+def minkowski_distance(UXRatings,UYRatings,r):
+    #calcualte minkowski distance for the given r
+    distance = 0       
+    for k in (set(UXRatings.keys()) & set(UYRatings.keys())):
+        p = UXRatings[k]
+        q = UYRatings[k]
+        distance += pow(abs(p - q), r)
+        
+    # return value of minkowski distance for the given r
+    return pow(distance,1/r)
+
+# user ratings
+songData3 = {"Angelica": {"Blues Traveler": 3.5, "Broken Bells": 2.0, "Norah Jones": 4.5, "Phoenix": 5.0, "Slightly Stoopid": 1.5, "The Strokes": 2.5, "Vampire Weekend": 2.0},
+         "Bill":{"Blues Traveler": 2.0, "Broken Bells": 3.5, "Deadmau5": 4.0, "Phoenix": 2.0, "Slightly Stoopid": 3.5, "Vampire Weekend": 3.0},
+         "Chan": {"Blues Traveler": 5.0, "Broken Bells": 1.0, "Deadmau5": 1.0, "Norah Jones": 3.0, "Phoenix": 5, "Slightly Stoopid": 1.0},
+         "Dan": {"Blues Traveler": 3.0, "Broken Bells": 4.0, "Deadmau5": 4.5, "Phoenix": 3.0, "Slightly Stoopid": 4.5, "The Strokes": 4.0, "Vampire Weekend": 2.0},
+         "Hailey": {"Broken Bells": 4.0, "Deadmau5": 1.0, "Norah Jones": 4.0, "The Strokes": 4.0, "Vampire Weekend": 1.0},
+         "Jordyn":  {"Broken Bells": 4.5, "Deadmau5": 4.0, "Norah Jones": 5.0, "Phoenix": 5.0, "Slightly Stoopid": 4.5, "The Strokes": 4.0, "Vampire Weekend": 4.0},
+         "Sam": {"Blues Traveler": 5.0, "Broken Bells": 2.0, "Norah Jones": 3.0, "Phoenix": 5.0, "Slightly Stoopid": 4.0, "The Strokes": 5.0},
+         "Veronica": {"Blues Traveler": 3.0, "Norah Jones": 5.0, "Phoenix": 4.0, "Slightly Stoopid": 2.5, "The Strokes": 3.0}
+        }
+
+
+# for whom are we making recommendations
+userX = "Hailey"
+userXRatings = songData3[userX]
+
+
+# find the euclidean distance between userX's ratings, and each of the other user'sratings.
+# use a for loop to get at the other users and their ratings.
+# use the function to calculate the euclidean distance (minkowski distance of r = 2)
+# assign list of (user, distance) tuples to variable userDistances.
+
+userDistances = []
+for userY, userYRatings in songData3.items(): 
+    if userY == userX:
+        continue
+    Euclid = minkowski_distance(userXRatings, userYRatings, 2)
+    tup = (userY, round(Euclid, 2))
+    userDistances.append(tup)
+print()
+print()
+print(userDistances)
+
+
+
+
+# Sorted list of tuples by lowest distance to highest distance.
+# assign sorted list to variable userSortedDistances.
+
+userSortedDistances = sorted(userDistances, key=itemgetter(1))
+print()
+print()
+print(userSortedDistances)
+
+
+# userX's NN is the user at the 0th position of the sorted list.
+# assigned NN to userXNN.
+
+userXNN = userSortedDistances[0][0]
+print()
+print()
+print(userXNN)
+
+
+#Recos for userX will include albums rated by userXNN, not already rated by userX.
+# assign list of (album, rating) tuples to variable userXRecos.
+
+userXRecos = []
+for userY in songData3[userXNN].keys():
+    if userY not in userXRatings.keys():
+        tup = (userY, songData3[userXNN][userY])
+        userXRecos.append(tup)
+print()
+print()
+print(sorted(userXRecos, key=itemgetter(1)))
+    
+
+
+#Sort list of tuples by highest rating to lowest rating.
+# assign sorted list to varaible userXSortedRecos.
+
+userXSortedRecos = sorted(userXRecos, key=itemgetter(1), reverse=True)
+print()
+print()
+print(userXSortedRecos)
+
+print()
+print()
+
+print ("Recommendations for", userX)
+print ("--------------------------")
+print ()
+print (userXSortedRecos)
